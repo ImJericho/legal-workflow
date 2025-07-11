@@ -1,17 +1,19 @@
 prompt = f'''
-Your client_info, {{ $json.body.client_info.client_name }} wants to file law suit against {{ $json.body.client_info.respondent_name}}.
+Your client_info,{{ $('Webhook').item.json.body.client_info.client_name }} wants to file law suit against {{ $('Webhook').item.json.body.client_info.respondent_name }}.
 Below are the details provided:
 
-- client_info's request: {{ $json.body.client_info.request }}
-- client_info's story: {{ $json.body.client_info.story }}
-- client_info's prayer: {{ $json.body.client_info.prayer }}
+- client_info's request: {{ $('Webhook').item.json.body.client_info.request }}
+- client_info's story: {{ $('Webhook').item.json.body.client_info.story }}
 
 Additional context:
-- Questions: {{ $json.body.aditional_info.questions }}
-- Answers: {{ $json.body.aditional_info.answers }}
+- Questions: {{ $('Webhook').item.json.body.additinal_info.questions }}
+- Answers: {{ $('Webhook').item.json.body.additinal_info.answers }}
 
-List any assumptions you are making due to missing or unclear information. 
-Put all the assumptions (e.g. about a date, sum, or fact) in a bullet point format.
+Assumptions: {{ $json.text }}
+
+
+Rewrite the facts in chronological order as a concise narrative suitable for a plaint. Include all material facts previously gathered, phrased formally and clearly. Do not speculate or add new facts. Use neutral, objective language.”
+(In law, facts should be stated sequentially to establish the case's timeline and context. This helps in understanding the sequence of events leading to the legal action.)
 '''
 
 system_prompt = '''

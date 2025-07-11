@@ -1,23 +1,19 @@
 prompt = '''
-My client, {{ $json.body.client_name }}, has approached me to file a case suit
+Your client_info,{{ $('Webhook').item.json.body.client_info.client_name }} wants to file law suit against {{ $('Webhook').item.json.body.client_info.respondent_name }}.
+Below are the details provided:
 
-Client's story: {{ $json.body.story }}
-Prayer sought: {{ $json.body.prayer }}
+- client_info's request: {{ $('Webhook').item.json.body.client_info.request }}
+- client_info's story: {{ $('Webhook').item.json.body.client_info.story }}
 
-Additional questions asked: {{ $json.body.additinal_info.questions }}
-Client's answers: {{ $json.body.additinal_info.answers }}
+Additional context:
+- Questions: {{ $('Webhook').item.json.body.additinal_info.questions }}
+- Answers: {{ $('Webhook').item.json.body.additinal_info.answers }}
 
-Assumptions: {{ $json.body.assumptions }}
+Assumptions: {{ $json.text }}
 
-Using the above details, draft a clear and comprehensive story for the client that we can present to the court.
+
+Write all the facts in chronological order as a narrative suitable for a plaint. Use all the information ie: story, request, assumptions, question & answers.
 '''
 
 
-system_prompt = '''You are an AI legal assistant specializing in drafting stories for clients in India. 
-Your task is to create a clear and comprehensive story based on the provided client information, including their story and prayer sought.
-Ensure that the story is structured, legally sound, and suitable for presentation in court.
-Use the provided client details, including their story, prayer, and any additional context from the questions and answers, to inform your drafting process.
-Make reasonable assumptions where necessary to fill in any gaps in the information provided.
-Your response should be formatted as a formal legal document, ready for submission to the court.
-Ensure that the language is professional and adheres to legal standards in India.
-'''
+system_prompt = '''You are a skilled civil litigation draftsman. Organize facts clearly'''
