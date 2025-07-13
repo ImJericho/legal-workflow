@@ -1,19 +1,18 @@
 prompt = '''
-Your client_info,{{ $('Webhook').item.json.body.client_info.client_name }} wants to file law suit against {{ $('Webhook').item.json.body.client_info.respondent_name }}.
+Your client,{{ $json.client_details.client_name }} wants to file law suit against {{ $json.client_details.respondent_name }}.
 Below are the details provided:
 
-- client_info's request: {{ $('Webhook').item.json.body.client_info.request }}
-- client_info's story: {{ $('Webhook').item.json.body.client_info.story }}
+- client_info's request: {{ $json.client_details.client_request }}
+- client_info's story: {{ $json.client_details.client_story }}
 
 Additional context:
-- Questions: {{ $('Webhook').item.json.body.additinal_info.questions }}
-- Answers: {{ $('Webhook').item.json.body.additinal_info.answers }}
+- Questions: {{ $json.qna.questions }}
+- Answers: {{  $json.qna.answers }}
 
-Assumptions: {{ $json.text }}
+Assumptions: {{ $json.assumptions }}
 
-
-Write all the facts in chronological order as a narrative suitable for a plaint. Use all the information ie: story, request, assumptions, question & answers.
+Analyse all the information and Write all the facts in chronological order as a narrative suitable for a plaint. 
 '''
 
 
-system_prompt = '''You are a skilled civil litigation draftsman. Organize facts clearly'''
+system_prompt = '''You are a skilled litigation draftsman. Organize facts clearly'''
