@@ -1,6 +1,22 @@
 import webbrowser
 import tempfile
 
+
+# Plaint Structure: 
+# Organize the plaint with the following typical components: 
+#     Court and Suit Details, 
+#     Parties, 
+#     Title of Suit, 
+#     Averments ("Most Respectfully Showeth"),  
+#     Cause of Action,
+#     Jurisdiction, 
+#     Valuation and Court Fee, 
+#     Prayer, 
+#     Signatures, and 
+#     Verification.
+
+
+
 plaint = '''
 <!DOCTYPE html>
 <html lang="en">
@@ -115,6 +131,9 @@ sheweth = '''
     <li>Just like this we will add from AI </li>
 '''
 
+sheweth2 = '''
+<ol>\n<li>The Plaintiff, Ravindra Madhwan, is the rightful heir of the late Mr. Kamal Madhwan, who passed away on 15th November 2019, leaving behind the ancestral property situated at [Property Address] (hereinafter referred to as the "Property").</li>\n<li>The Defendant, Kishore Madhwan, is the Plaintiff's only sibling and has wrongfully taken possession of the Property following their father's demise.</li>\n<li>On 1st January 2020, the Plaintiff issued a legal notice to the Defendant, demanding that the Defendant vacate the Property and hand over possession to the Plaintiff, which the Defendant has failed to comply with.</li>\n</ol>
+'''
 pray = '''
     <li>Pass a decree for Rs.&nbsp;4,19,200/‑ with interest @18% p.a. from ……… (date) until filing of the suit.</li>
     <li>Award pendent­lite and future interest @18% p.a. on Rs.&nbsp;4,19,200/‑ from ……… (date) until payment.</li>
@@ -122,6 +141,9 @@ pray = '''
     <li>Pass any other order deemed fit and proper.</li>
     <li>Just like this we will add from AI </li>
 '''
+
+pray2 = '''
+<ol>\n<li>A declaration that the Plaintiff is the rightful and legal owner of the Property.</li>\n<li>A declaration that the Defendant's occupation of the Property is illegal and wrongful.</li>\n<li>An order directing the Defendant to vacate and surrender peaceful possession of the Property to the Plaintiff forthwith.</li>\n<li>Compensation for damages suffered by the Plaintiff due to the wrongful occupation of the Property, including but not limited to loss of rent, utility expenses, and emotional distress.</li>\n<li>A perpetual injunction restraining the Defendant, his agents, servants, and/or anyone acting on his behalf, from interfering with the Plaintiff's peaceful possession and enjoyment of the Property.</li>\n<li>Any other relief deemed just and equitable by this Honourable Court.</li>\n</ol>'''
 
 verification = '''
 Verified at Delhi on this 1st day of January 20… that the contents of paras 1 to … are true to my knowledge and those of paras … to … are true on information and belief, and the last para is my prayer.
@@ -144,10 +166,10 @@ respondent_name = '''
 
 plaint_final = plaint.replace(
     '<PLAINT HERE>',
-    f'{sheweth}'
+    f'{sheweth2}'
 ).replace(
     '<PRAY HERE>',
-    f'{pray}'
+    f'{pray2}'
 ).replace(
     '<TITLE HERE>',
     f'{title}'

@@ -17,3 +17,14 @@ Your task is to create a clear and comprehensive pleading based on the provided 
 Ensure that the pleading is structured, legally sound, and suitable for presentation in court.
 
 '''
+
+rules = '''
+1. Every pleading must state facts and not law.
+2. It must state all material facts and material facts only.
+3. It must state only the facts on which the party’s pleading relies and not the evidence by
+which they are to be proved; and
+4. It must state such facts concisely, but with precision and certainty.
+'''
+
+detailed_rules = '''
+'''
