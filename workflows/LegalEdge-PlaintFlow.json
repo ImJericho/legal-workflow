@@ -56,7 +56,7 @@
         "text": "=Your client {{ $('No Operation, do nothing').item.json.client_details.client_name }}, wants to file plaint against {{ $('No Operation, do nothing').item.json.client_details.respondent_name }}.\n\nBelow are the details provided by the client:\n- client's synopsis: {{ $json.story }}\n- prayer sought: {{ $json.prayer }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=You are an experienced Indian litigation lawyer. Your task is to draft the Synopsis and Prayer sections of a civil plaint based strictly on the client’s narrative and prayer.\n\nBased on the information provided by the client you have to draft the following section of a plaint:\n- introduction: a very short paragraph briefly introducing the plaintiff and concise statement of the reliefs sought.\n- synopsis: List of chronological narration of the relevant facts leading to the filing of the suit.\n- prayer: List clearly and specifically outlines the relief sought from the court.\n\nYou must aim to produce these sections as detailed as possible.\nWhere client story and prayer lacks clarity (e.g., missing dates, addresses, amounts), explicitly state the ambiguity and recommend clarification.\nYou have to keep your langauge and grammer as it should be in the plaint filing.\n"
+          "systemMessage": "=You are an experienced Indian litigation lawyer. Your task is to draft the Synopsis and Prayer sections of a civil plaint based strictly on the client’s narrative and prayer.\n\nBased on the information provided by the client you have to draft the following section of a plaint:\n- heading: A breif description of the suit.\n- introduction: a very short paragraph briefly introducing the plaintiff and concise statement of the reliefs sought.\n- synopsis: List of chronological narration of the relevant facts leading to the filing of the suit.\n- prayer: List clearly and specifically outlines the relief sought from the court.\n\nYou must aim to produce these sections as detailed as possible.\nWhere client story and prayer lacks clarity (e.g., missing dates, addresses, amounts), explicitly state the ambiguity and recommend clarification.\nYou have to keep your langauge and grammer as it should be in the plaint filing.\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -390,7 +390,7 @@
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"introduction\": \"\",\n  \"synopsis\": [\"\", \"\", \"\", \"\",\"\"],\n  \"prayer\": [\"\", \"\", \"\"]\n}",
+        "jsonSchemaExample": "{\n  \"heading\": \"\",\n  \"introduction\": \"\",\n  \"synopsis\": [\"\", \"\", \"\", \"\",\"\"],\n  \"prayer\": [\"\", \"\", \"\"]\n}",
         "autoFix": true
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
@@ -443,6 +443,12 @@
       "parameters": {
         "assignments": {
           "assignments": [
+            {
+              "id": "9fdd726c-25ce-4d48-8173-f5c961feed38",
+              "name": "result.heading",
+              "value": "={{ $json.output.heading }}",
+              "type": "string"
+            },
             {
               "id": "f04c92ca-b36f-403d-a10d-c2b6751f16f3",
               "name": "result.introduction",
@@ -784,7 +790,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "timezone": "Asia/Kolkata"
   },
-  "versionId": "dd92ecd2-fc31-4116-bbbc-8c93dc98f0b5",
+  "versionId": "3a0a5e08-0a94-41f6-92d4-e9f40c0d332a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"
