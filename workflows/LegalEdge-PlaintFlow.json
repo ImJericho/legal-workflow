@@ -444,6 +444,24 @@
         "assignments": {
           "assignments": [
             {
+              "id": "869a0f54-178a-401d-a4a4-b98ce7282352",
+              "name": "result.court",
+              "value": "={{ $('No Operation, do nothing').item.json.user_details.adv_court }}",
+              "type": "string"
+            },
+            {
+              "id": "f1e3cfdb-4ae2-4350-acdd-71bbca0fa1c9",
+              "name": "result.plaintiff",
+              "value": "={{ $('No Operation, do nothing').item.json.client_details.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "0edc7c09-cde6-4548-81e9-43a36a46c953",
+              "name": "result.respondent",
+              "value": "={{ $('No Operation, do nothing').item.json.client_details.respondent_name }}",
+              "type": "string"
+            },
+            {
               "id": "9fdd726c-25ce-4d48-8173-f5c961feed38",
               "name": "result.heading",
               "value": "={{ $json.output.heading }}",
@@ -466,6 +484,12 @@
               "name": "result.prayer",
               "value": "={{ $json.output.prayer }}",
               "type": "array"
+            },
+            {
+              "id": "df004519-1fcb-461a-93f5-ab29d24846de",
+              "name": "result.advocate",
+              "value": "={{ $('No Operation, do nothing').item.json.user_details.adv_name }}",
+              "type": "string"
             }
           ]
         },
@@ -790,7 +814,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "timezone": "Asia/Kolkata"
   },
-  "versionId": "3a0a5e08-0a94-41f6-92d4-e9f40c0d332a",
+  "versionId": "457fbca6-c3c4-4529-9052-e0e05ee53db5",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"

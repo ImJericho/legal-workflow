@@ -507,7 +507,7 @@
           "assignments": [
             {
               "id": "611caecf-1401-4caf-a887-52834b97bd2c",
-              "name": "result.adv_court",
+              "name": "result.court",
               "value": "={{ $('No Operation, do nothing1').item.json.user_details.adv_court }}",
               "type": "string"
             },
@@ -549,7 +549,7 @@
             },
             {
               "id": "f8f48330-07ac-4577-b213-602bc570424e",
-              "name": "result.adv_name",
+              "name": "result.advocate",
               "value": "={{ $('No Operation, do nothing1').item.json.user_details.adv_name }}",
               "type": "string"
             }
@@ -1043,11 +1043,11 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ef20f465-71fa-4dff-9f84-e5a34e0bbb8d",
+  "versionId": "9a03f033-61b6-4fe5-baf3-c0272ef7d803",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"
