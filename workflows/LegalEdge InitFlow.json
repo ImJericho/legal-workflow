@@ -1,0 +1,331 @@
+{
+  "name": "LegalEdge InitFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/backend2/drafter/draft",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        -220
+      ],
+      "id": "d7611a47-1031-4552-927f-11a6c171b027",
+      "name": "Webhook",
+      "webhookId": "6922d7c4-4429-4b88-b00f-f062fe1c91d8"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "plaint",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "311b24ce-3fb9-4b2b-aa3a-e63c2b028233"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2727fe8b-4671-494f-97d2-da5779c7213b",
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "writ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "da70d052-0d5e-4e04-926f-045ac0e0fde1",
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "notice",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -200,
+        -220
+      ],
+      "id": "133b5c31-83e7-4bc3-9678-333abb515413",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        -220
+      ],
+      "id": "3a2ee380-127b-437b-b7a5-1b2aa089060f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "9fkDu1ZxpjutGIR2",
+          "mode": "list",
+          "cachedResultName": "LegalEdge-PlaintFlow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_details": "={{ $json.body.user_details }}",
+            "client_details": "={{ $json.body.client_details }}",
+            "type": "={{ $json.body.type }}",
+            "qna": "={{ $json.body.qna }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_details",
+              "displayName": "user_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "client_details",
+              "displayName": "client_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "qna",
+              "displayName": "qna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        -320
+      ],
+      "id": "b4b03be0-41f1-415b-89dc-5d06eee7cda8",
+      "name": "PlaintFlow"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Qz41MBEsoLHyD5Rg",
+          "mode": "list",
+          "cachedResultName": "LegalEdge-WritFlow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_details": "={{ $json.body.user_details }}",
+            "type": "={{ $json.body.type }}",
+            "qna": "={{ $json.body.qna }}",
+            "client_details": "={{ $json.body.client_details }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_details",
+              "displayName": "user_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "client_details",
+              "displayName": "client_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "qna",
+              "displayName": "qna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        -120
+      ],
+      "id": "12024dda-7c16-4564-9d34-8893ddebc808",
+      "name": "WritFlow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "PlaintFlow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WritFlow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PlaintFlow": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WritFlow": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1d937974-1deb-4800-892a-349d4cd8cba5",
+  "meta": {
+    "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"
+  },
+  "id": "g2IbyqfwTHsQMg51",
+  "tags": []
+}

@@ -1,0 +1,1057 @@
+{
+  "name": "LegalEdge-WritFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "inputText": "={{ $json.client_details.client_request }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Habeas Corpus",
+              "description": "This writ is issued to direct a person who has been detained to be brought before a court to determine if the detention is lawful. It essentially means \"to have the body\" and is used to protect individuals from illegal detention. "
+            },
+            {
+              "category": "Mandamus",
+              "description": "This writ is issued to command a public authority to perform a public duty that it has failed to perform or has neglected to perform. It essentially means \"we command\" and is used to compel government bodies or officials to fulfill their responsibilities."
+            },
+            {
+              "category": "Certiorari",
+              "description": "This writ is issued by a higher court to a lower court or tribunal to transfer a case pending before the latter to the former or to quash the order of the latter. It is used to review the decisions of lower courts or tribunals and ensure they have not exceeded their jurisdiction or made errors of law."
+            },
+            {
+              "category": "Prohibition",
+              "description": "This writ is issued by a higher court to a lower court or tribunal to prohibit the latter from exceeding its jurisdiction or acting contrary to law. It is used to prevent lower courts or tribunals from taking actions beyond their legal authority."
+            },
+            {
+              "category": "Quo Warranto",
+              "description": "This writ is issued to inquire into the legality of a person's claim to a public office. It essentially means \"by what warrant\" and is used to challenge the right of a person to hold a public office."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        -1760,
+        280
+      ],
+      "id": "92b56f75-c2e5-4116-93a2-987d5c9c00a7",
+      "name": "Text Classifier",
+      "alwaysOutputData": false,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "maxTokensToSample": 128,
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        580
+      ],
+      "id": "192ad7a4-8b3d-47f1-bb18-735dbad536be",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Client Name: {{ $json.client_details.client_name }}\nClient Request: {{ $json.client_details.client_request }} under {{ $json.writ_type }}.\nClient Story: {{ $json.client_details.client_story }}\nClient Prayer: {{ $json.client_details.client_prayer }}\n\nHere are the additional information obtained from the client:\nQuestions : {{ $json.qna.questions }}\nAnswers: {{ $json.qna.answers }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=You are a legal assistant understanding your client's query in detail.\nDraft the following sections of the {{ $json.writ_type }}:\n- request: what does user actually wants to do.\n- synopsis: detailed factial information in chronological orders.\n- prayer: what is user praying the court to do.\n- grounds: on what legal grounds he is claiming the prayer (also mention there names).\n\nThe information provided by the client may not contain all the details required to draft the writ like the prayer, grounds, etc. Use your deep understanding of the law and the facts provided to fill in the gaps.\nFinally make each of the section as detailed as possible"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        280
+      ],
+      "id": "b17d33ec-7b6e-4a46-ae6f-d24cfa104e04",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14308468-3860-4908-a350-65e29c6c3730",
+              "name": "user_details",
+              "value": "={{ $json.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "137be6cd-03f5-4374-8e95-2e9e31290e17",
+              "name": "client_details",
+              "value": "={{ $json.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "5d6347f3-fa88-4a7c-867e-1a4ed35afd08",
+              "name": "qna",
+              "value": "={{ $json.qna }}",
+              "type": "object"
+            },
+            {
+              "id": "81bacb8a-eac1-404c-b431-ef2551b740df",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "e33f4fa1-4780-4920-ad28-aebffff353eb",
+              "name": "writ_type",
+              "value": "Mandamus Writ Petition",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1400,
+        80
+      ],
+      "id": "dc9e4ca6-dab3-46f8-9f38-f9e24741a468",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"request\": \"\",\n  \"synopsis\": \"\",\n  \"grounds\": \"\",\n  \"praying\": \"\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -20,
+        502.5
+      ],
+      "id": "6913e55a-9dc0-4e04-9d4f-cced27dd5d1f",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-r1-distill-llama-70b",
+        "options": {
+          "maxTokensToSample": 8192,
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        500
+      ],
+      "id": "8209539b-8db1-4669-90ef-508669276086",
+      "name": "Groq Chat Model4",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        280
+      ],
+      "id": "eb563d1a-2196-4195-be38-8440a6235186",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -500,
+        500
+      ],
+      "id": "fe4495f3-57d7-4528-b59a-37fd75d14c65",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n    \"user_details\": {\n        \"adv_name\": \"Meenakshi Arora\",\n        \"adv_court\": \"Supreme Court of India\",\n        \"adv_specialization\": \"constitutional\"\n    },\n    \"client_details\": {\n        \"client_name\": \"Anjali Sharma\",\n        \"client_request\": \"File a writ petition challenging the arbitrary cancellation of my government scholarship.\",\n        \"client_story\": \"I am a meritorious student belonging to an economically weaker section. I was awarded a central government scholarship for higher education in 2023. However, in June 2024, I received a notice stating that my scholarship was cancelled due to non-compliance, without any prior hearing or explanation. Despite multiple representations to the Ministry of Education, there has been no response or reinstatement.\",\n        \"client_prayer\": \"I seek issuance of a writ of **certiorari** to quash the arbitrary cancellation order and a writ of **mandamus** directing the Ministry of Education to reinstate my scholarship with all dues.\",\n        \"respondent_name\": \"Ministry of Education, Government of India\"\n    },\n    \"type\": \"writ\",\n    \"qna\": {\n        \"questions\": [\n            \"When was the scholarship granted and for what duration?\",\n            \"Did you receive any notice or hearing opportunity before cancellation?\",\n            \"What steps have you taken to resolve the issue before approaching the court?\"\n        ],\n        \"answers\": [\n            \"The scholarship was granted in July 2023 for a 4-year undergraduate program at Delhi University.\",\n            \"No, I did not receive any notice or opportunity to be heard before the cancellation order was issued in June 2024.\",\n            \"I submitted written representations to the Ministry in July and August 2024, and also approached the scholarship helpdesk, but received no response.\"\n        ]\n    }\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1980,
+        380
+      ],
+      "id": "64f1ffb9-f8d5-4de1-ae84-dbf223e31028",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/backend2/drafter/draft/writ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2200,
+        180
+      ],
+      "id": "5bb63399-cb06-4b03-b664-89dfc58c35ac",
+      "name": "Webhook",
+      "webhookId": "23cc415a-00ff-4c27-b549-db3cb6912717"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "206ac33d-1bce-4e1c-88b9-eac450098504",
+              "name": "user_details",
+              "value": "={{ $json.body.user_details }}",
+              "type": "string"
+            },
+            {
+              "id": "0260f5e2-1fc8-4f62-ae6d-807dd1cd713e",
+              "name": "client_details",
+              "value": "={{ $json.body.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "f4046182-5816-4b05-a37d-d02c4500ba09",
+              "name": "type",
+              "value": "={{ $json.body.type }}",
+              "type": "string"
+            },
+            {
+              "id": "0534ea54-5313-4e98-a342-8ebd1bb21b90",
+              "name": "qna",
+              "value": "={{ $json.body.qna }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1980,
+        180
+      ],
+      "id": "4404a9b6-3024-410a-8c2e-51c9759f8b2b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14308468-3860-4908-a350-65e29c6c3730",
+              "name": "user_details",
+              "value": "={{ $json.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "137be6cd-03f5-4374-8e95-2e9e31290e17",
+              "name": "client_details",
+              "value": "={{ $json.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "5d6347f3-fa88-4a7c-867e-1a4ed35afd08",
+              "name": "qna",
+              "value": "={{ $json.qna }}",
+              "type": "object"
+            },
+            {
+              "id": "81bacb8a-eac1-404c-b431-ef2551b740df",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "e33f4fa1-4780-4920-ad28-aebffff353eb",
+              "name": "writ_type",
+              "value": "Habeas Corpus Writ Petition",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1400,
+        -120
+      ],
+      "id": "bef13865-6f91-4e27-8612-34bb96d779fd",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14308468-3860-4908-a350-65e29c6c3730",
+              "name": "user_details",
+              "value": "={{ $json.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "137be6cd-03f5-4374-8e95-2e9e31290e17",
+              "name": "client_details",
+              "value": "={{ $json.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "5d6347f3-fa88-4a7c-867e-1a4ed35afd08",
+              "name": "qna",
+              "value": "={{ $json.qna }}",
+              "type": "object"
+            },
+            {
+              "id": "81bacb8a-eac1-404c-b431-ef2551b740df",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "e33f4fa1-4780-4920-ad28-aebffff353eb",
+              "name": "writ_type",
+              "value": "Certiorari Writ Petition",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1400,
+        280
+      ],
+      "id": "7680018a-ff63-462b-b9b1-8434c7d4f4c3",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14308468-3860-4908-a350-65e29c6c3730",
+              "name": "user_details",
+              "value": "={{ $json.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "137be6cd-03f5-4374-8e95-2e9e31290e17",
+              "name": "client_details",
+              "value": "={{ $json.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "5d6347f3-fa88-4a7c-867e-1a4ed35afd08",
+              "name": "qna",
+              "value": "={{ $json.qna }}",
+              "type": "object"
+            },
+            {
+              "id": "81bacb8a-eac1-404c-b431-ef2551b740df",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "e33f4fa1-4780-4920-ad28-aebffff353eb",
+              "name": "writ_type",
+              "value": "Prohibition Writ Petition",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1400,
+        480
+      ],
+      "id": "87357a78-f0f2-443b-be2a-8f49437cc57d",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14308468-3860-4908-a350-65e29c6c3730",
+              "name": "user_details",
+              "value": "={{ $json.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "137be6cd-03f5-4374-8e95-2e9e31290e17",
+              "name": "client_details",
+              "value": "={{ $json.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "5d6347f3-fa88-4a7c-867e-1a4ed35afd08",
+              "name": "qna",
+              "value": "={{ $json.qna }}",
+              "type": "object"
+            },
+            {
+              "id": "81bacb8a-eac1-404c-b431-ef2551b740df",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "e33f4fa1-4780-4920-ad28-aebffff353eb",
+              "name": "writ_type",
+              "value": "Quo Warranto Writ Petition",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1400,
+        680
+      ],
+      "id": "eadce450-05e7-4922-9bf3-460851df7a4c",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a47640d-e21d-4bb2-b1f8-d42e5d420378",
+              "name": "user_details",
+              "value": "={{ $json.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "e9fcf680-3c7f-47bc-8e83-cb28d7ace3c8",
+              "name": "client_details",
+              "value": "={{ $json.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "a1dfd008-4471-4c44-b841-bff09783e059",
+              "name": "qna",
+              "value": "={{ $json.qna }}",
+              "type": "object"
+            },
+            {
+              "id": "74c18adc-c557-45b3-ba53-4d93302f0333",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "a58bef6e-4353-4aee-8fe5-8e22ddac9204",
+              "name": "writ_type",
+              "value": "={{ $json.writ_type }}",
+              "type": "string"
+            },
+            {
+              "id": "f3858df3-032d-4f42-b26e-0e47bab1e6ac",
+              "name": "sessionId",
+              "value": "15",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -960,
+        280
+      ],
+      "id": "a6b21858-53e3-46ee-8a5a-85a7bc60573f",
+      "name": "Adding SessionId Field"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "611caecf-1401-4caf-a887-52834b97bd2c",
+              "name": "result.adv_court",
+              "value": "={{ $('No Operation, do nothing1').item.json.user_details.adv_court }}",
+              "type": "string"
+            },
+            {
+              "id": "b2ab672e-0d89-4fb3-a5cc-210978318b65",
+              "name": "result.petitioner",
+              "value": "={{ $json.output.petitioner }}",
+              "type": "string"
+            },
+            {
+              "id": "516ce755-6edd-46ce-aabf-795aecf8660e",
+              "name": "result.respondent",
+              "value": "={{ $json.output.respondent }}",
+              "type": "string"
+            },
+            {
+              "id": "58d395e1-5570-46bf-a9b2-a41bb9e9faa0",
+              "name": "result.introduction",
+              "value": "={{ $json.output.introduction }}",
+              "type": "string"
+            },
+            {
+              "id": "6708b6a9-8d94-49d5-b6b9-01a5a032020a",
+              "name": "result.breif_facts",
+              "value": "={{ $json.output.breif_facts }}",
+              "type": "array"
+            },
+            {
+              "id": "3e0a91e9-38b5-4d43-ae9f-6be7ea55c439",
+              "name": "result.grounds",
+              "value": "={{ $json.output.grounds }}",
+              "type": "array"
+            },
+            {
+              "id": "8f094dd0-a2b5-492f-9dcb-5c1ca2160abf",
+              "name": "result.prayer",
+              "value": "={{ $json.output.prayer }}",
+              "type": "array"
+            },
+            {
+              "id": "f8f48330-07ac-4577-b213-602bc570424e",
+              "name": "result.adv_name",
+              "value": "={{ $('No Operation, do nothing1').item.json.user_details.adv_name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        700,
+        280
+      ],
+      "id": "eabc7761-5aa8-4240-8059-be1dce048e74",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"petitioner\": \"ABHYUDAY AGARWAL\",\n  \"respondent\": \"MINISTRY OF ENVIRONMENT\",\n  \"introduction\": \"\",\n  \"breif_facts\": [\"asd\", \"Asdf\", \"Asdf\", \"asd\", \"asf\", \"Asdf\"],\n  \"grounds\": [\"aasf\", \"As\", \"Asdf\",\"asf\"],\n  \"prayer\": [\"as\",\"Af\",\"asf\", \"as\", \"Asdf\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        500
+      ],
+      "id": "b794f35a-3f95-4dce-aa5a-0776a6ab4acb",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the instrctured information of the client, analyse this and draft the actual writ sections with the laguage suitable for a good writ petition.\nClient's Request: {{ $json.output.request }}\nClient's Synopsis: {{ $json.output.synopsis }}\nGround: {{ $json.output.grounds }}\nPraying: {{ $json.output.praying }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a legal assistant whos job is to draft writ petition to be submitted in {{ $('No Operation, do nothing1').item.json.user_details.adv_court }} of India.\n\nDraft the following sections of the writ:\n- petitioner: Name(s) and destination(s) of the plaitiff's party as required by a writ. \n- respondents: Name(s) and destination(s) of the respondent's party as required by a writ. \n- introduction: Paragraph briefly introduces the petitioner and the respondent(s) and concise statement of the reliefs sought (what the petitioner wants the court to do)\n- breif of facts: Presents a clear and chronological narration of the relevant facts leading to the filing of the writ petition.\n- grounds: Legal and factual reasons why the court should intervene.  \n- prayer: Clearly and specifically outlines the relief sought from the court.\n\nYou have to keep your langauge and grammer as it should be in the writ petition."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        340,
+        280
+      ],
+      "id": "fb20bcc8-0eaf-491a-922f-4fdc88adf646",
+      "name": "Legal Formatter Agent"
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "maxTokensToSample": 8192,
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        360,
+        500
+      ],
+      "id": "9abbe09c-7ab2-4a09-a044-76c87c716392",
+      "name": "Legal Formatter LLM",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "temperature": 0.6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        60,
+        700
+      ],
+      "id": "b4f3b47a-d7c0-4763-94e9-d27cc5bd6b95",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "maxTokensToSample": 8192
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        500
+      ],
+      "id": "d2f95027-19a3-4f15-911e-51d4c8e9000b",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool whenever you need any informaiton about any act, law, article, or any landmark judgments of India.",
+        "workflowId": {
+          "__rl": true,
+          "value": "QwO0MemZIUHgyskv",
+          "mode": "list",
+          "cachedResultName": "LegalEdge-RagFlow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', `Your query as a string`, 'string') }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -260,
+        500
+      ],
+      "id": "6390dc08-79a9-46a3-89ab-1ebf5dfcf7d6",
+      "name": "Rag Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        500
+      ],
+      "id": "075bd90f-e6f0-44e7-a8f4-5a76ad81ebfd",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool if you need verification about anything about the legal system in India.\nYou can call it like when if you want to know the strcuture of a plaint or pleading or contract in India, it will provide you one.",
+        "workflowId": {
+          "__rl": true,
+          "value": "ioPyPiO2QmOg2ffW",
+          "mode": "list",
+          "cachedResultName": "LegalEdge WebToolFlow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -380,
+        500
+      ],
+      "id": "edcad303-8ba6-4d80-9f3b-04c18ebd7eb8",
+      "name": "WebTool Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Legal Formatter Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing1": {
+      "main": [
+        [
+          {
+            "node": "Adding SessionId Field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Adding SessionId Field": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Legal Formatter Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Legal Formatter Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Legal Formatter LLM": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Legal Formatter Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Rag Agent": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WebTool Agent": {
+      "ai_tool": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ef20f465-71fa-4dff-9f84-e5a34e0bbb8d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"
+  },
+  "id": "Qz41MBEsoLHyD5Rg",
+  "tags": []
+}

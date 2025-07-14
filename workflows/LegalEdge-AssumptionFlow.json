@@ -1,0 +1,265 @@
+{
+  "name": "LegalEdge-AssumptionFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/backend2/drafter/assumptions",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -500,
+        240
+      ],
+      "id": "83d78353-8c7f-4113-b090-d68f987962d0",
+      "name": "Webhook",
+      "webhookId": "f6f9bd19-ff77-4412-8d4f-159512cd926f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseKey": "output"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        520,
+        340
+      ],
+      "id": "92676703-6fb3-4568-9e09-48747e45483b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {
+          "separator": "\\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserItemList",
+      "typeVersion": 1,
+      "position": [
+        80,
+        560
+      ],
+      "id": "abc447ae-983d-4fdd-b7d0-ca4b3942d13c",
+      "name": "Item List Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "text",
+              "renameField": true,
+              "outputFieldName": "assumptions"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        300,
+        340
+      ],
+      "id": "c064c8a4-a0a9-4468-a285-87e20453208e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your client wants to file law suit of type {{ $json.type }} against {{ $json.client_details.respondent_name }}\nBelow are the details provided:\n\n- client's request: {{  $json.client_details.client_request }}\n- client's story: {{ $json.client_details.client_story }}\n- client's prayer: {{ $json.client_details.client_prayer }}\n\nAdditional context:\n- Questions: {{ $json.qna.questions }}\n- Answers: {{ $json.qna.answers }}\n\nList any assumptions you are making due to missing or unclear information. \nPut all the assumptions (e.g. about a date, sum, or fact) in a bullet point format.\n\n\nOutput should only consist of assumptions nothing else.\nexample\n```\nThe respondent is your real brother. \nYour father died without writing any will.\nYou already have given them legal notice.\n```",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an experienced litigator preparing to interview a new client_info to clarify the facts and legal issues of their case.\n\nWritten just the list of assumptions nothing extra text."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -60,
+        340
+      ],
+      "id": "e3086f3a-ffda-40a8-a0be-a38e30f94d3d",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokensToSample": 526,
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        560
+      ],
+      "id": "2c6499bf-3a35-4f73-a9a8-e53fa6560d55",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n    \"user_details\":{\n        \"adv_name\": \"Harish Salve\",\n        \"adv_court\": \"High Court Bombay\",\n        \"adv_specialization\": \"civil\"\n    },\n    \"client_details\": {\n        \"client_name\": \"Ravindra Madhwan\",\n        \"client_request\": \"File a suit to take my land acquisition\",\n        \"client_story\": \"My Brother has captured my land after my father died.\",\n        \"client_prayer\": \"I want my land back.\",\n        \"respondent_name\": \"Kishore Madhwan\"\n    },\n    \"type\": \"plaint\",\n    \"qna\":{\n        \"questions\": [\n            \"Whats your relationship with the respondent?\",\n            \"When did you published the notice?\",\n            \"Share the timeline of the case?\"\n            ],\n        \"answers\": [\n            \"He is my only sibling.\",\n            \"I have given the notice on 1st Jan 2020\",\n            \"My father Mr. Kamal Madhwan died on 15th Nov 2019\"\n        ]\n    }\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        440
+      ],
+      "id": "77f2f2f2-54d7-48fd-a8ad-ca83c15bf45c",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6a972a2b-b904-4e4f-aa0b-86e4ae25892c",
+              "name": "user_details",
+              "value": "={{ $json.body.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "83e8cf44-ccf8-4f6c-afb2-c9d57c65539d",
+              "name": "client_details",
+              "value": "={{ $json.body.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "0d3f91d8-f233-424b-90eb-7d909adf93e9",
+              "name": "type",
+              "value": "={{ $json.body.type }}",
+              "type": "string"
+            },
+            {
+              "id": "325d8391-f0e7-4390-b17b-5c0815efb8ab",
+              "name": "qna",
+              "value": "={{ $json.body.qna }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -280,
+        240
+      ],
+      "id": "b2b3df7a-ee4e-496b-970d-4328529a7d37",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item List Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "71efccfd-94e5-42df-9af2-63eebf94b63b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"
+  },
+  "id": "ePpYcssTGmJwDaUu",
+  "tags": []
+}

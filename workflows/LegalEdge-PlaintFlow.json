@@ -1,0 +1,794 @@
+{
+  "name": "LegalEdge-PlaintFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your client,{{ $json.client_details.client_name }} wants to file law suit against {{ $json.client_details.respondent_name }}.\nBelow are the details provided:\n\n- client_info's request: {{ $json.client_details.client_request }}\n- client_info's story: {{ $json.client_details.client_story }}\n\nAdditional context:\n- Questions: {{ $json.qna.questions }}\n- Answers: {{  $json.qna.answers }}\n\nMore Information: {{ $json.assumptions }}\n\nAnalyse all the information provided to you and Write all the facts in chronological order as a narrative suitable for a plaint. \n",
+        "options": {
+          "systemMessage": "You are a skilled litigation draftsman. Organize facts clearly"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        -60
+      ],
+      "id": "adc0f421-6f4c-4dbd-ac56-58e437c869d4",
+      "name": "Story Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your client_info,{{ $json.client_details.client_name }} wants to file law suit against {{ $json.client_details.respondent_name }}.\nBelow are the details provided:\n\n- client_info's request: {{ $json.client_details.client_request }}\n- client_info's story: {{ $json.client_details.client_story }}\n\nAdditional context:\n- Questions: {{ $json.qna.questions }}\n- Answers: {{  $json.qna.answers }}\n\nMore Information: {{ $json.type }}\n\nBased on the client’s objectives and any additional potential remedies, draft a detailed prayer for relief. Clearly specify the exact remedies sought (e.g., monetary compensation, injunction, costs), referencing relevant legal provisions or sections (e.g., ‘under Section X of Act Y’). Ensure the relief is stated specifically, as required by legal rules.\n",
+        "options": {
+          "systemMessage": "You are an experienced advocate drafting the relief section of a plaint.\n\nYour task is to create a clear and comprehensive prayer based on the provided client information, including their story and prayer sought.\nEnsure that the prayer is structured, legally sound, and suitable for presentation in court."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        440
+      ],
+      "id": "ee14817a-8e7c-450b-bdbe-9a38e2a1cfbb",
+      "name": "Prayer Agent"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        20,
+        240
+      ],
+      "id": "c7d4b14f-6909-4178-aff1-f2e21d9c68e3",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your client {{ $('No Operation, do nothing').item.json.client_details.client_name }}, wants to file plaint against {{ $('No Operation, do nothing').item.json.client_details.respondent_name }}.\n\nBelow are the details provided by the client:\n- client's synopsis: {{ $json.story }}\n- prayer sought: {{ $json.prayer }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an experienced Indian litigation lawyer. Your task is to draft the Synopsis and Prayer sections of a civil plaint based strictly on the client’s narrative and prayer.\n\nBased on the information provided by the client you have to draft the following section of a plaint:\n- introduction: a very short paragraph briefly introducing the plaintiff and concise statement of the reliefs sought.\n- synopsis: List of chronological narration of the relevant facts leading to the filing of the suit.\n- prayer: List clearly and specifically outlines the relief sought from the court.\n\nYou must aim to produce these sections as detailed as possible.\nWhere client story and prayer lacks clarity (e.g., missing dates, addresses, amounts), explicitly state the ambiguity and recommend clarification.\nYou have to keep your langauge and grammer as it should be in the plaint filing.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        260,
+        240
+      ],
+      "id": "1dfe4cf9-ed00-4471-96d2-1ee1dcecb998",
+      "name": "Draft Agent"
+    },
+    {
+      "parameters": {
+        "keys": {
+          "key": [
+            {
+              "currentKey": "output",
+              "newKey": "story"
+            }
+          ]
+        },
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-base.renameKeys",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        40
+      ],
+      "id": "d71b1f5d-fec1-4f28-9bb4-0c566de8a384",
+      "name": "Rename Keys"
+    },
+    {
+      "parameters": {
+        "keys": {
+          "key": [
+            {
+              "currentKey": "output",
+              "newKey": "prayer"
+            }
+          ]
+        },
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-base.renameKeys",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        440
+      ],
+      "id": "1c06d7b7-3145-4bc3-b020-f553743a460a",
+      "name": "Rename Keys1"
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "maxTokensToSample": 5120,
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        160
+      ],
+      "id": "b7c91a84-12f8-468a-bca7-d3e16c9a1943",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "maxTokensToSample": 5120,
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        660
+      ],
+      "id": "abf47c29-6471-4d61-ac4f-ffbb4b2e5070",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "maxTokensToSample": 8192,
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        240,
+        460
+      ],
+      "id": "08d7b321-27ca-4e8f-b592-48f6d19946da",
+      "name": "Groq Chat Model3",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ePpYcssTGmJwDaUu",
+          "mode": "list",
+          "cachedResultName": "LegalEdge-AssumptionFlow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_details": "={{ $json.user_details }}",
+            "client_details": "={{ $json.client_details }}",
+            "type": "={{ $json.type }}",
+            "qna": "={{ $json.qna }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_details",
+              "displayName": "user_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object"
+            },
+            {
+              "id": "client_details",
+              "displayName": "client_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object"
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "qna",
+              "displayName": "qna",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -1220,
+        340
+      ],
+      "id": "d5e3903f-e058-4609-9976-8b03aed13a97",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "18a49bbb-a572-4d89-9f62-1581694be58f",
+              "leftValue": "={{ $json.assumptions }}",
+              "rightValue": "null",
+              "operator": {
+                "type": "boolean",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1440,
+        240
+      ],
+      "id": "db3ac3d5-46dd-4edb-b40c-64e802483a52",
+      "name": "Assumptions exists"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0db3907d-6f29-4639-9f02-e2e6a5e441f0",
+              "name": "assumptions",
+              "value": "={{ $json.assumptions }}",
+              "type": "array"
+            },
+            {
+              "id": "5ef37bc2-5b1b-458b-91a4-4c238e6b7049",
+              "name": "user_details",
+              "value": "={{ $('No Operation, do nothing1').item.json.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "da4679da-3115-4844-8210-b28b11556f79",
+              "name": "client_details",
+              "value": "={{ $('No Operation, do nothing1').item.json.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "6718cdd9-0682-41eb-aac4-685cdadce1e9",
+              "name": "type",
+              "value": "={{ $('No Operation, do nothing1').item.json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "b8ffa880-ed96-45ad-9508-4aa5262ff76b",
+              "name": "qna",
+              "value": "={{ $('No Operation, do nothing1').item.json.qna }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1000,
+        340
+      ],
+      "id": "5d399f97-1e22-4483-93e4-603718579efe",
+      "name": "Package Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cca5f2ea-5be4-4d52-a1c3-94ae15bb13a6",
+              "name": "user_details",
+              "value": "={{ $('Webhook').item.json.body.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "67471d39-44d9-4684-96e7-6e496b046887",
+              "name": "client_details",
+              "value": "={{ $('Webhook').item.json.body.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "23f2f628-031c-49d1-8bb1-f8b0609e459c",
+              "name": "qna",
+              "value": "={{ $('Webhook').item.json.body.qna }}",
+              "type": "object"
+            },
+            {
+              "id": "dc46f964-8342-476c-b4b6-e85d936bb4ef",
+              "name": "type",
+              "value": "={{ $('Webhook').item.json.body.type }}",
+              "type": "string"
+            },
+            {
+              "id": "7b3200ca-e200-4f6c-87be-dcc9298f84e1",
+              "name": "assumptions",
+              "value": "={{ $('Webhook').item.json.body.assumptions }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1000,
+        140
+      ],
+      "id": "d9548258-476f-4a08-8deb-f9f11137ad7b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        240
+      ],
+      "id": "38956b8b-f052-4883-9331-987603eeb575",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"introduction\": \"\",\n  \"synopsis\": [\"\", \"\", \"\", \"\",\"\"],\n  \"prayer\": [\"\", \"\", \"\"]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        360,
+        462.5
+      ],
+      "id": "c4e379b3-8804-405d-9229-2e7d9bac9947",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "maxTokensToSample": 8192,
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        440,
+        660
+      ],
+      "id": "28336a90-d9eb-469c-a4c7-98ef0d425ea4",
+      "name": "Groq Chat Model5",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n    \"user_details\": {\n        \"adv_name\": \"Meenakshi Arora\",\n        \"adv_court\": \"Supreme Court of India\",\n        \"adv_specialization\": \"constitutional\"\n    },\n    \"client_details\": {\n        \"client_name\": \"Anjali Sharma\",\n        \"client_request\": \"File a writ petition challenging the arbitrary cancellation of my government scholarship.\",\n        \"client_story\": \"I am a meritorious student belonging to an economically weaker section. I was awarded a central government scholarship for higher education in 2023. However, in June 2024, I received a notice stating that my scholarship was cancelled due to non-compliance, without any prior hearing or explanation. Despite multiple representations to the Ministry of Education, there has been no response or reinstatement.\",\n        \"client_prayer\": \"I seek issuance of a writ of **certiorari** to quash the arbitrary cancellation order and a writ of **mandamus** directing the Ministry of Education to reinstate my scholarship with all dues.\",\n        \"respondent_name\": \"Ministry of Education, Government of India\"\n    },\n    \"type\": \"writ\",\n    \"qna\": {\n        \"questions\": [\n            \"When was the scholarship granted and for what duration?\",\n            \"Did you receive any notice or hearing opportunity before cancellation?\",\n            \"What steps have you taken to resolve the issue before approaching the court?\"\n        ],\n        \"answers\": [\n            \"The scholarship was granted in July 2023 for a 4-year undergraduate program at Delhi University.\",\n            \"No, I did not receive any notice or opportunity to be heard before the cancellation order was issued in June 2024.\",\n            \"I submitted written representations to the Ministry in July and August 2024, and also approached the scholarship helpdesk, but received no response.\"\n        ]\n    }\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1980,
+        240
+      ],
+      "id": "02249f42-b8ba-49ae-8072-0274e4497643",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f04c92ca-b36f-403d-a10d-c2b6751f16f3",
+              "name": "result.introduction",
+              "value": "={{ $json.output.introduction }}",
+              "type": "string"
+            },
+            {
+              "id": "9b01c1a4-830a-4304-a2ad-b238871e32c0",
+              "name": "result.synopsis",
+              "value": "={{ $json.output.synopsis }}",
+              "type": "array"
+            },
+            {
+              "id": "5ebdb98f-4f64-427e-a4e4-8a66445db166",
+              "name": "result.prayer",
+              "value": "={{ $json.output.prayer }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        620,
+        240
+      ],
+      "id": "1c225665-f8a7-46d6-ba3c-8820641141c4",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/backend2/drafter/draft/plaint",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2140,
+        440
+      ],
+      "id": "ab6f2ba1-a746-44f8-be5d-740a7a4bac3f",
+      "name": "Webhook",
+      "webhookId": "23cc415a-00ff-4c27-b549-db3cb6912717"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "206ac33d-1bce-4e1c-88b9-eac450098504",
+              "name": "user_details",
+              "value": "={{ $json.body.user_details }}",
+              "type": "object"
+            },
+            {
+              "id": "0260f5e2-1fc8-4f62-ae6d-807dd1cd713e",
+              "name": "client_details",
+              "value": "={{ $json.body.client_details }}",
+              "type": "object"
+            },
+            {
+              "id": "f4046182-5816-4b05-a37d-d02c4500ba09",
+              "name": "type",
+              "value": "={{ $json.body.type }}",
+              "type": "string"
+            },
+            {
+              "id": "0534ea54-5313-4e98-a342-8ebd1bb21b90",
+              "name": "qna",
+              "value": "={{ $json.body.qna }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1920,
+        440
+      ],
+      "id": "6294be2d-575f-48c4-9681-229c20ed11d9",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1660,
+        240
+      ],
+      "id": "3922a94e-c68c-453e-a20e-e881cf2ab01c",
+      "name": "No Operation, do nothing1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Prayer Agent": {
+      "main": [
+        [
+          {
+            "node": "Rename Keys1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Story Agent": {
+      "main": [
+        [
+          {
+            "node": "Rename Keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Draft Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Keys": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Keys1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Story Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prayer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Draft Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Package Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assumptions exists": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Package Fields": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "Story Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prayer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Draft Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing1": {
+      "main": [
+        [
+          {
+            "node": "Assumptions exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "timezone": "Asia/Kolkata"
+  },
+  "versionId": "dd92ecd2-fc31-4116-bbbc-8c93dc98f0b5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"
+  },
+  "id": "9fkDu1ZxpjutGIR2",
+  "tags": []
+}

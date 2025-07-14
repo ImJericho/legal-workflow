@@ -1,0 +1,233 @@
+{
+  "name": "LegalEdge-RagFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -380,
+        60
+      ],
+      "id": "24af01ab-8e08-4f85-ae69-05b539415953",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You have to collect all the constitutional information about the wrong doing happened to the user \nAlways call the tool provided to you which will tell you about any information related to laws of India."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -40
+      ],
+      "id": "87040b01-4d69-4b47-91d8-743273392322",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/backend2/drafter/rag",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        -140
+      ],
+      "id": "f6e0bb99-84c6-44e7-9e35-2b7b17470b32",
+      "name": "Webhook",
+      "webhookId": "3fa9c32c-4bef-4217-8ab5-0979a3d9869f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        180
+      ],
+      "id": "e1018280-fb78-4298-8dd3-f0b3553f2569",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "044b128e-9dbb-44b8-bdb3-186fa37ab955",
+              "name": "query",
+              "value": "={{ $json.body.query }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -380,
+        -140
+      ],
+      "id": "7406b16d-d757-470f-8ecc-793f0647da95",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call this tool to get any information about the constitutional wrong doing in India.\n\n#input\nThis tool takes  query as input which a sentence describing the full query",
+        "method": "POST",
+        "url": "https://3vt3rbvme3.execute-api.ap-south-1.amazonaws.com/api/dev/backend2/drafter/rag",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true,
+        "dataField": "results",
+        "fieldsToInclude": "selected",
+        "fields": "acts"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        180
+      ],
+      "id": "41dd7595-3cc5-4a56-b07c-7a2c675c77fa",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e33d799d-1a5f-44ae-b17c-471fff020fae",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        -40
+      ],
+      "id": "beba5c00-6c5a-4c94-b28b-2157ee062454",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8e6b06da-ed96-4a65-b5b3-c0fb3ff9187b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"
+  },
+  "id": "QwO0MemZIUHgyskv",
+  "tags": []
+}

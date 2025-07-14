@@ -1,0 +1,290 @@
+{
+  "name": "LegalEdge-QuestionFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/backend2/drafter/questions",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2340,
+        580
+      ],
+      "id": "b66a223a-e8de-4b73-9b4b-4b519f13c5ee",
+      "name": "Webhook",
+      "webhookId": "f6f9bd19-ff77-4412-8d4f-159512cd926f"
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {
+          "maxTokensToSample": 1024,
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1880,
+        800
+      ],
+      "id": "fac22d4d-a2cf-4ce1-93bb-7d7bfc540f12",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "mIC9sABTcv77ssgq",
+          "name": "Vivek Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"questions\": [\n            \"\",\n            \"\",\n            \"\"\n        ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1760,
+        800
+      ],
+      "id": "2df85211-7855-440d-91dc-c60a3e50f8a2",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1320,
+        580
+      ],
+      "id": "48e81823-e3ca-4f33-988c-e5e9a12c82d0",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "plaint",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "39ad9fc8-8133-4eb3-9609-4b970f1b9a9f"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8d28fcea-53f4-4260-9523-b1bb851fa7a8",
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "writ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "37500371-82fe-4ec5-92df-4dfc81575639",
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "other",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -2120,
+        580
+      ],
+      "id": "957034ed-3852-4256-a850-49d258e0c188",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=- Client's Name {{ $json.body.client_details.client_name }}\n- Respondent's Name: {{ $json.body.client_details.respondent_name }}\n- Client's Request: {{$json.body.client_details.client_request}}\n- Client's Synopsis: {{$json.body.client_details.client_story}}.\n- Client's Prayer: {{ $json.body.client_details.client_prayer }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a experienced litigation lawyer practicing in India. You are a master in writing {{$json.body.type}}. \n\nA client has come up to you with request to draft {{ $json.body.type}}.\nClient has already provided you some information but it still lacks some key information which is fundamental to understand for drafting a good {{ $json.body.type }}.\n\nYou have prepare list few single paragraph questions to ask the client. \nEnsure questions cover all details needed to establish the cause of action and jurisdiction etc which is important to draft a good {{ $json.body.type}}. \n\nYour output should only consist of list of questions nothing else."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -1900,
+        580
+      ],
+      "id": "f2ede0de-3666-4326-8f97-6157bd16c599",
+      "name": "Plaint LLM Chain"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "42ddb692-5f23-4e8f-980e-dd23b51a749c",
+              "name": "result.questions",
+              "value": "={{ $json.output.questions }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1540,
+        580
+      ],
+      "id": "680abd11-9dc1-49c5-a1f9-f6ebf20d3a78",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Plaint LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Plaint LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Plaint LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Plaint LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Plaint LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1bd21bb0-2361-44ff-99e5-32b8fc8037e5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "08dfda59a8d6ddf2e193764b6d27acbed38ed8adccbac4a71600de350d887a36"
+  },
+  "id": "WpJgtWU3HswjewKa",
+  "tags": []
+}
