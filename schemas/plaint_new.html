@@ -2,41 +2,31 @@
 <html lang="en">
 <body>
 
-  <h2>In the Court of District Judge (District Shajapur), Rohini Court, Delhi</h2>
+  <h2>{{ court }}</h2>
   <p><strong>Suit No.</strong> ………….. of 20…</p>
   <p>(Suit under Order XXXVII of the Code of Civil Procedure, 1908)</p>
 
   <h3>Plaintiff:</h3>
-  <p>
-    M/s ABC Pvt. Ltd.,<br>
-    A Company incorporated under the Companies Act,<br>
-    Having its Registered Office at ………, New Delhi.<br>
-    Through its Director Shri ……………………
-  </p>
+  <p>{{ plaintiff }}</p>
 
   <h3>Defendant:</h3>
-  <p>
-    M/s XYZ Ltd.,<br>
-    A Company incorporated under the Companies Act,<br>
-    Having its Registered Office at ………, Chandigarh.<br>
-    Through its Director Shri ……………………
-  </p>
+  <p>{{ respondent }}</p>
 
-  <h2>Suit for Recovery of Rs. 4,19,200/‑ under Order XXXVII CPC</h2>
+  <h2>{{ heading }}</h2>
 
   <h3>Most Respectfully Sheweth:</h3>
+  <p>{{ introduction }}</p>
   <ol>
-    <li>The Plaintiff is a Company constituted under the Companies Act having its registered office at B‑40, Safdarjung Enclave, New Delhi. Mr. P., Executive Director, is duly authorised to institute this suit.</li>
-    <li>The Plaintiff carries on the business of construction, engineering and designing, and has earned a reputation as a builder of international repute.</li>
-    <li>The Defendant is a Company incorporated under the Companies Act, having its registered office at Chandigarh.</li>
+    {% for point in synopsis %}
+    <li>{{ point }}</li>
+    {% endfor %}
   </ol>
 
   <h3>Prayer:</h3>
   <ol type="a">
-    <li>Pass a decree for Rs. 4,19,200/‑ with interest @18% p.a. from ……… (date) until filing of the suit.</li>
-    <li>Award pendent­lite and future interest @18% p.a. on Rs. 4,19,200/‑ from ……… (date) until payment.</li>
-    <li>Award costs of the suit in favour of the Plaintiff.</li>
-    <li>Pass any other order deemed fit and proper.</li>
+    {% for point in prayer %}
+    <li>{{ point }}</li>
+    {% endfor %}
   </ol>
 
   <br>
@@ -44,18 +34,14 @@
     ……………… Plaintiff<br>
     Place: ________<br>
     Date: ________<br>
-    Through Advocate<br>
+    Through {{ advocate }}<br>
   </p>
-
 
   <h3>Verification:</h3>
   <p>
-    Verified at Delhi on this 1st day of January 20… that the contents of paras 1 to … are true to my knowledge and those of paras … to … are true on information and belief, and the last para is my prayer.
+    Verified at Delhi on this 1st day of January 20… that the contents of the above paras are true to my knowledge and belief.
   </p>
   <p>Plaintiff Sign</p>
-
-
-
 
   <footer>
     <b><u>Note:</u></b> The plaint must be supported by an affidavit. Ensure correct paragraph numbering and state jurisdictional details accurately.

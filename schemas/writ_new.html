@@ -2,64 +2,49 @@
 <html lang="en">
 <body>
 
+  <h2>{{court}}</h2>
+  <p><strong>Suit No.</strong> ………….. of 20…</p>
+  <p>(Suit under Order XXXVII of the Code of Civil Procedure, 1908)</p>
 
-  <h2>In the High Court of Delhi at New Delhi</h2>
-  <h2>(Writ Jurisdiction)</h2>
+  <h3>Plaintiff:</h3>
+  <p>{{plaintiff}}</p>
 
-  <p><strong>WRIT PETITION (CIVIL) NO.</strong> ________ OF 20__</p>
+  <h3>Defendant:</h3>
+  <p>{{respondent}}</p>
 
-  <h3>In the Matter of:</h3>
-  <p>
-    X _________ S/o _________<br>
-    R/o ___________<br>
-    <em>Petitioner</em>
-  </p>
+  <h2>{{heading}}</h2>
 
-  <h3>Versus</h3>
-  <p>
-    Municipal Corporation of Delhi,<br>
-    Through Its Commissioner<br>
-    <br>
-    <em>Respondent</em>
-  </p>
-
-  <h2>Writ Petition under Article 226 of Constitution of India</h2>
-  <h2>For issuance of prerogative writ of mandamus or any other appropriate writ</h2>
-
-  <h3>Most Respectfully Showeth:</h3>
+  <h3>Most Respectfully Sheweth:</h3>
+  <p>{{introduction}}</p>
   <ol>
-    <li>The petitioner is a citizen of India residing at ________. The respondent is Municipal Corporation of Delhi having its office at Town Hall, Chandni Chowk, Delhi.</li>
-  </ol>
-
-  <h3>Brief Facts:</h3>
-  <ol start="2">
-    <li>The petitioner is aggrieved by the illegal appointments of daily wage workers by the M.C.D. office in defiance of Notification No. MCD/LF/01-103 dated 1.2.2014 which requires the M.C.D. to appoint only those people as daily wage workers who are below the age of 30 years as on 01.10.2014. The said Notification was issued after due approval.</li>
-    <li>Same grievance as above reiterated by petitioner regarding said illegal appointments.</li>
-  </ol>
-
-  <h3>Grounds:</h3>
-  <ol type="a">
-    <li>Because the action of the respondent is contrary to law and good conscience.</li>
-    <li>Because the action of the respondent is arbitrary, unreasonable, irrational and unconstitutional.</li>
-    <li>Because the respondent have no right to play with the career of the petitioner.</li>
-    <li>That the cause of action arose on 1.2.2014 when the respondent issued Notification No. MCD/LF/01-103; continued with appointment of ineligible persons; and persists due to inaction.</li>
-    <li>That the petitioner has no other efficacious remedy except to approach this Hon’ble Court.</li>
+    {% for point in synopsis %}
+    <li>{{point}}</li>
+    {% endfor %}
   </ol>
 
   <h3>Prayer:</h3>
   <ol type="a">
-    <li>Issue a writ of mandamus or other appropriate writ directing respondents to cancel the illegal appointments made in disregard of Notification No. MCD/LF/01-103 dated 1.2.2014;</li>
-    <li>Issue necessary directions for appointment of the petitioner;</li>
+    {% for point in prayer %}
+    <li>{{point}}</li>
+    {% endfor %}
   </ol>
+
   <br>
   <p>
     ……………… Plaintiff<br>
     Place: ________<br>
     Date: ________<br>
-    Through Advocate<br>
+    Through {{advocate}}<br>
   </p>
+
+  <h3>Verification:</h3>
+  <p>
+    Verified at Delhi on this 1st day of January 20… that the contents of the above paras are true to my knowledge and belief.
+  </p>
+  <p>Plaintiff Sign</p>
+
   <footer>
-    Note: This petition will be supported by an affidavit.
+    <b><u>Note:</u></b> The plaint must be supported by an affidavit. Ensure correct paragraph numbering and state jurisdictional details accurately.
   </footer>
 
 </body>
