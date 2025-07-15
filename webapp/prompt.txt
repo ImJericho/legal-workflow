@@ -1,0 +1,36 @@
+Build a complete, modern, and responsive frontend website using **React (with Next.js)** and **Tailwind CSS**, connected to working APIs for a multi-step legal drafter tool. The backend is already implemented and provides structured APIs. You need to focus only on building the frontend.
+
+## Pages & Layout
+- Build a homepage with 4 **main feature panels**. Only 1 is active whose name is "Drafter", others should show "Coming Soon" overlays.
+- Clicking on the active feature opens the **drafter workflow**, which has 4 steps.
+
+## Drafter Workflow (Steps)
+
+### 1. Box Selection
+- Call `POST /api/backend1/drafter/boxes` to get the list of boxes.
+- Render each box as a card with `name`, `description`.
+- On clicking a box, store its `box_id` and move to the next step.
+
+### 2. Input Form
+- Call `POST /api/backend1/drafter/box/inputs` with selected `box_id`.
+- Dynamically render all text inputs returned under `query`.
+- Add inline validation (non-empty fields), and a **Next** button to continue.
+
+### 3. Q&A Step
+- On clicking Next, call `POST /api/backend1/drafter/questions` with all previous inputs + `box_id`.
+- Render the returned questions (as strings) with corresponding textareas for answers.
+- Show a **Submit** button after all answers are filled.
+
+### 4. HTML Draft + Editor
+- On Submit, call `POST /api/dev/backend2/drafter/draft` with initial inputs + box_id + Q&A.
+- Parse `html_draft` into a **Tiptap editor** instance (editable document).
+- Use Tiptap with basic extensions: bold, italic, underline, list, link, heading, etc.
+
+## Requirements
+- Use **React functional components**, **Tailwind CSS**, **Axios**.
+- Centralized API handler (`lib/api.ts`), and global state using Zustand or React Context.
+- Responsive and web-friendly design.
+- Add loading spinners, error handling, and clean transitions between steps.
+
+## Deliverable
+Output a production-grade frontend ready to plug into the given APIs.
